@@ -20,8 +20,10 @@ class Post(Base):
     id = Column(Integer, primary_key=True, index=True, unique=True)
     title = Column(TEXT)
     content = Column(TEXT)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(
+        DateTime(timezone=True), default=func.now(), onupdate=func.now()
+    )
 
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", back_populates="posts")
