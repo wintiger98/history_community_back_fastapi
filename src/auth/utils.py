@@ -189,7 +189,8 @@ def update_user(data: UserUpdate, user: User, db: Session) -> dict:
     # 수정
     try:
         for key, value in data.model_dump().items():
-            setattr(user, key, value)
+            if value:
+                setattr(user, key, value)
     except:
         return {"result": False, "detail": "data update failed"}
 

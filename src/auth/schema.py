@@ -19,7 +19,7 @@ class UserOutput(UserBase):
     updated_at: Optional[datetime]
 
 
-class UserUpdate(UserBase):
+class UserUpdate(BaseModel):
     password: Optional[str]
     nickname: Optional[str]
 
