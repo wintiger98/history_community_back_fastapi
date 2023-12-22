@@ -127,6 +127,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+.git/
 migration/versions
 env/
 venv/
