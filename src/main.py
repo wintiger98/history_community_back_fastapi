@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .auth.router import router as auth_router
+from .countries.router import router as countries_router
+
 from .auth.models import User
 from .countries.models import Country, Cheer
 from .countries.posts.models import Post, PostLikeDislike
@@ -10,6 +12,7 @@ from .mappers.models import user_country_mapper
 
 app = FastAPI()
 app.include_router(auth_router)
+app.include_router(countries_router)
 
 # CORS 설정 추가
 origins = [
