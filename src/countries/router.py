@@ -26,7 +26,7 @@ async def get_all_countries(db: Session = Depends(get_db)):
     return countries
 
 
-@router.get("/{country_id}", response_class=CountryOutput)
+@router.get("/{country_id}", response_model=CountryOutput)
 async def get_country(country_id: int, db: Session = Depends(get_db)):
     filters = {id: country_id}
     country = get_countries(filters=filters, db=db)
