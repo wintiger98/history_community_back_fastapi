@@ -3,8 +3,8 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 from .schema import CountryInput, CountryOutput
-from .models import Country
-from ..database import get_db
+from .models import Cheer, Country
+from ..auth.models import User
 
 
 def make_country(data: CountryInput, db: Session):
@@ -53,3 +53,27 @@ def erase_country(country: Country, db: Session):
         return True
     except:
         return False
+
+
+def cheer_country(country: Country, user: User, db: Session):
+    stmt = select(Cheer).where(
+        and_(Cheer.country_id == country.id, Cheer.user_id == user.id)
+    )
+    result = db.execute(stmt)
+    cheer = result.scalar()
+
+    # 이미 응원했다면 다운
+    if cheer:
+        db.delete(cheer)
+        db.commit()
+        return {
+            "result": False,
+            "detail": f"Successfully cancelled cheer for {country.name}",
+        }
+    # 응원한적없다면 새로 생성
+    else:
+        cheer = Cheer(user_id=user.id, country_id=country.id)
+        db.add(cheer)
+        db.commit()
+
+        return {"result": True, "detail": f"Successfully cheered for {country.name}"}

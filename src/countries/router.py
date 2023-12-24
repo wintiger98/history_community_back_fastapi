@@ -4,6 +4,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from ..database import get_db
+from ..auth.models import User
+from ..auth.utils import get_current_user
 from .utils import erase_country, get_countries, make_country, update_country
 from .schema import CountryOutput, CountryInput
 from .models import Country, Cheer
@@ -72,5 +74,22 @@ async def delete_country(country_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{country_id}/cheer")
-async def cheer_country(db: Session = Depends(get_db)):
-    pass
+async def cheer_country(
+    country_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # 국가확인
+    filters = {"id": country_id}
+    country = get_countries(filters=filters, db=db)
+    if not country:
+        raise HTTPException(status_code=404, detail="Not found country")
+    if len(country) > 1:
+        raise HTTPException(status_code=400, detail="Invalid country id")
+
+    result = cheer_country(country=country, user=user, db=db)
+
+    if result["result"]:
+        return {"detail": result["detail"]}
+    else:
+        return {"detail": result["detail"]}
