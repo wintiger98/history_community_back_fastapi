@@ -28,7 +28,7 @@ async def get_all_countries(db: Session = Depends(get_db)):
 
 @router.get("/{country_id}", response_model=CountryOutput)
 async def get_country(country_id: int, db: Session = Depends(get_db)):
-    filters = {id: country_id}
+    filters = {"id": country_id}
     country = get_countries(filters=filters, db=db)
     if not country:
         raise HTTPException(status_code=404, detail="Not found country")
@@ -41,7 +41,7 @@ async def get_country(country_id: int, db: Session = Depends(get_db)):
 async def put_country(
     country_id: int, data: CountryInput, db: Session = Depends(get_db)
 ):
-    filters = {id: country_id}
+    filters = {"id": country_id}
     country = get_countries(filters=filters, db=db)
     if not country:
         raise HTTPException(status_code=404, detail="Not found country")
@@ -57,7 +57,7 @@ async def put_country(
 
 @router.delete("/{country_id}")
 async def delete_country(country_id: int, db: Session = Depends(get_db)):
-    filters = {id: country_id}
+    filters = {"id": country_id}
     country = get_countries(filters=filters, db=db)
     if not country:
         raise HTTPException(status_code=404, detail="Not found country")
