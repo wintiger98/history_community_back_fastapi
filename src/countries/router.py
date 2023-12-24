@@ -16,27 +16,39 @@ router = APIRouter(
 
 @router.post("", response_model=CountryOutput)
 async def post_country(data: CountryInput, db: Session = Depends(get_db)):
-    country = make_country()
+    country = make_country(data=data, db=db)
     return country
 
 
 @router.get("", response_model=List[CountryOutput])
 async def get_all_countries(db: Session = Depends(get_db)):
-    countries = get_countries()
+    countries = get_countries(filters={}, db=db)
     return countries
 
 
 @router.get("/{country_id}", response_class=CountryOutput)
 async def get_country(country_id: int, db: Session = Depends(get_db)):
-    country = get_countries()
+    filters = {id: country_id}
+    country = get_countries(filters=filters, db=db)
     if not country:
         raise HTTPException(status_code=404, detail="Not found country")
-    return country
+    if len(country) > 1:
+        raise HTTPException(status_code=400, detail="Invalid country id")
+    return country[0]
 
 
 @router.put("/{country_id}")
-async def put_country(db: Session = Depends(get_db)):
-    result = update_country()
+async def put_country(
+    country_id: int, data: CountryInput, db: Session = Depends(get_db)
+):
+    filters = {id: country_id}
+    country = get_countries(filters=filters, db=db)
+    if not country:
+        raise HTTPException(status_code=404, detail="Not found country")
+    if len(country) > 1:
+        raise HTTPException(status_code=400, detail="Invalid country id")
+    country = country[0]
+    result = update_country(data=data, country=country, db=db)
     if result["result"]:
         return {"detail": "Country updated"}
     else:
@@ -44,8 +56,16 @@ async def put_country(db: Session = Depends(get_db)):
 
 
 @router.delete("/{country_id}")
-async def delete_country(db: Session = Depends(get_db)):
-    if erase_country():
+async def delete_country(country_id: int, db: Session = Depends(get_db)):
+    filters = {id: country_id}
+    country = get_countries(filters=filters, db=db)
+    if not country:
+        raise HTTPException(status_code=404, detail="Not found country")
+    if len(country) > 1:
+        raise HTTPException(status_code=400, detail="Invalid country id")
+    country = country[0]
+
+    if erase_country(country=country, db=db):
         return {"detail": "Country deleted"}
     else:
         raise HTTPException(status_code=400, detail="Country delete failed")
