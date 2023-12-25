@@ -86,7 +86,7 @@ async def cheer_country(
         raise HTTPException(status_code=404, detail="Not found country")
     if len(country) > 1:
         raise HTTPException(status_code=400, detail="Invalid country id")
-
+    # 응원
     result = cheer_country(country=country, user=user, db=db)
 
     if result["result"]:
