@@ -77,3 +77,15 @@ def cheer_country(country: Country, user: User, db: Session):
         db.commit()
 
         return {"result": True, "detail": f"Successfully cheered for {country.name}"}
+
+
+def get_country_by_id(country_id: int, db: Session):
+    filters = {"id": country_id}
+    country = get_countries(filters=filters, db=db)
+    # 대상 국가가 존재하지 않을 때
+    if not country:
+        raise HTTPException(status_code=404, detail="Not found country")
+    # 대상 국가가 여러개일 때
+    if len(country) > 1:
+        raise HTTPException(status_code=400, detail="Invalid country id")
+    return country[0]

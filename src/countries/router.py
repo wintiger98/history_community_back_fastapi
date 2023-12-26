@@ -6,7 +6,13 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from ..auth.models import User
 from ..auth.utils import get_current_user
-from .utils import erase_country, get_countries, make_country, update_country
+from .utils import (
+    erase_country,
+    get_countries,
+    get_country_by_id,
+    make_country,
+    update_country,
+)
 from .schema import CountryOutput, CountryInput
 from .models import Country, Cheer
 
@@ -30,26 +36,14 @@ async def get_all_countries(db: Session = Depends(get_db)):
 
 @router.get("/{country_id}", response_model=CountryOutput)
 async def get_country(country_id: int, db: Session = Depends(get_db)):
-    filters = {"id": country_id}
-    country = get_countries(filters=filters, db=db)
-    if not country:
-        raise HTTPException(status_code=404, detail="Not found country")
-    if len(country) > 1:
-        raise HTTPException(status_code=400, detail="Invalid country id")
-    return country[0]
+    return get_country_by_id(country_id=country_id, db=db)
 
 
 @router.put("/{country_id}")
 async def put_country(
     country_id: int, data: CountryInput, db: Session = Depends(get_db)
 ):
-    filters = {"id": country_id}
-    country = get_countries(filters=filters, db=db)
-    if not country:
-        raise HTTPException(status_code=404, detail="Not found country")
-    if len(country) > 1:
-        raise HTTPException(status_code=400, detail="Invalid country id")
-    country = country[0]
+    country = get_country_by_id(country_id=country_id, db=db)
     result = update_country(data=data, country=country, db=db)
     if result["result"]:
         return {"detail": "Country updated"}
@@ -59,14 +53,7 @@ async def put_country(
 
 @router.delete("/{country_id}")
 async def delete_country(country_id: int, db: Session = Depends(get_db)):
-    # 국가 존재 여부 확인
-    filters = {"id": country_id}
-    country = get_countries(filters=filters, db=db)
-    if not country:
-        raise HTTPException(status_code=404, detail="Not found country")
-    if len(country) > 1:
-        raise HTTPException(status_code=400, detail="Invalid country id")
-    country = country[0]
+    country = get_country_by_id(country_id=country_id, db=db)
 
     if erase_country(country=country, db=db):
         return {"detail": "Country deleted"}
@@ -80,13 +67,8 @@ async def cheer_country(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # 국가확인
-    filters = {"id": country_id}
-    country = get_countries(filters=filters, db=db)
-    if not country:
-        raise HTTPException(status_code=404, detail="Not found country")
-    if len(country) > 1:
-        raise HTTPException(status_code=400, detail="Invalid country id")
+    # 국가 판별
+    country = get_country_by_id(country_id=country_id, db=db)
     # 응원
     result = cheer_country(country=country, user=user, db=db)
 
