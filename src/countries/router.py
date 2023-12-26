@@ -59,6 +59,7 @@ async def put_country(
 
 @router.delete("/{country_id}")
 async def delete_country(country_id: int, db: Session = Depends(get_db)):
+    # 국가 존재 여부 확인
     filters = {"id": country_id}
     country = get_countries(filters=filters, db=db)
     if not country:
