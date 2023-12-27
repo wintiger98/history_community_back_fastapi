@@ -7,6 +7,7 @@ from ..database import get_db
 from ..auth.models import User
 from ..auth.utils import get_current_user
 from .utils import (
+    cheer,
     erase_country,
     get_countries,
     get_country_by_id,
@@ -70,7 +71,7 @@ async def cheer_country(
     # 국가 판별
     country = get_country_by_id(country_id=country_id, db=db)
     # 응원
-    result = cheer_country(country=country, user=user, db=db)
+    result = cheer(country=country, user=user, db=db)
 
     if result["result"]:
         return {"detail": result["detail"]}

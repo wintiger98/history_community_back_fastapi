@@ -55,7 +55,7 @@ def erase_country(country: Country, db: Session):
         return False
 
 
-def cheer_country(country: Country, user: User, db: Session):
+def cheer(country: Country, user: User, db: Session):
     stmt = select(Cheer).where(
         and_(Cheer.country_id == country.id, Cheer.user_id == user.id)
     )
