@@ -15,7 +15,6 @@ from .utils import (
     update_country,
 )
 from .schema import CountryOutput, CountryInput
-from .models import Country, Cheer
 
 router = APIRouter(
     prefix="/countries",
