@@ -15,11 +15,15 @@ from .utils import (
     update_country,
 )
 from .schema import CountryOutput, CountryInput
+from .posts.router import router as posts_router
+
 
 router = APIRouter(
     prefix="/countries",
     tags=["countries"],
 )
+
+router.include_router(posts_router)
 
 
 @router.post("", response_model=CountryOutput)
