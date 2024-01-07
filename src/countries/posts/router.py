@@ -7,22 +7,31 @@ from ...database import get_db
 from ...auth.models import User
 from ...auth.utils import get_current_user
 
+from ..utils import get_country_by_id
+
+from .utils import make_post, get_posts, update_post, erase_post
+from .schemas import PostInput, PostOutput
+
 router = APIRouter(
     prefix="/{country_id}/posts",
     tags=["posts"],
 )
 
 
-@router.post("")
-async def post_posts(country_id: int, db: Session = Depends(get_db)):
+@router.post("", response_model=PostOutput)
+async def post_post(country_id: int, data: PostInput, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 생성
-    return 
+    post = make_post(data=data, db=db)
+
+    return post
 
 
 @router.get("")
 async def get_all_posts(country_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 조회
     pass
 
@@ -30,6 +39,7 @@ async def get_all_posts(country_id: int, db: Session = Depends(get_db)):
 @router.get("/{post_id}")
 async def get_post(country_id: int, post_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 조회
     pass
 
@@ -37,6 +47,7 @@ async def get_post(country_id: int, post_id: int, db: Session = Depends(get_db))
 @router.put("/{post_id}")
 async def put_post(country_id: int, post_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 조회
     # 3. 게시글 수정(작성자 여부 확인)
     pass
@@ -45,6 +56,7 @@ async def put_post(country_id: int, post_id: int, db: Session = Depends(get_db))
 @router.delete("/{post_id}")
 async def delete_post(country_id: int, post_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 조회
     # 3. 게시글 삭제(작성자 여부 확인)
     pass
@@ -53,6 +65,7 @@ async def delete_post(country_id: int, post_id: int, db: Session = Depends(get_d
 @router.post("/{post_id}/like")
 async def like_post(country_id: int, post_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 확인
     # 3. 좋아요
     pass
@@ -61,6 +74,7 @@ async def like_post(country_id: int, post_id: int, db: Session = Depends(get_db)
 @router.post("/{post_id}/dislike")
 async def dislike_post(country_id: int, post_id: int, db: Session = Depends(get_db)):
     # 1. 국가 확인
+    country = get_country_by_id(country_id=country_id, db=db)
     # 2. 게시글 확인
     # 3. 싫어요
     pass
